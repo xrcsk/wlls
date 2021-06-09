@@ -1,18 +1,18 @@
-# File: .github/workflows/repo-sync.yml
-name: A🔄自动同步🔄A
+name: sync-chinnkarahoi-scripts
 on:
   schedule:
-    - cron: '0 */1 * * *'
+    - cron: '1 0,15 * * *'
   workflow_dispatch:
   watch:
     types: started
+  push:
+    branches: [ master ]
   repository_dispatch:
-    types: repo-sync
+    types: sync-lxk0301-scripts
 jobs:
   repo-sync:
     env:
-      PAT: ${{ github.event.client_payload.PAT || secrets.PAT }} #此处PAT需要申请，教程详见：https://www.jianshu.com/p/bb82b3ad1d11
-      dst_key: ${{ secrets.GITEE_PRIVATE_KEY }} # 我自己同步到gitee使用，其他人可忽略
+      PAT: ${{ secrets.PAT }} #此处PAT需要申请，教程详见：https://www.jianshu.com/p/bb82b3ad1d11
     runs-on: ubuntu-latest
     if: github.event.repository.owner.id == github.event.sender.id
     steps:
@@ -20,27 +20,38 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: 开始🔄自动同步🔄
+      - name: sync chinnkarahoi-scripts
         uses: repo-sync/github-sync@v2
         if: env.PAT
         with:
-          source_repo: "https://github.com/wuzhi03/MyActions.git"
-          source_branch: "main"
-          destination_branch: "main"
-          github_token: ${{ github.event.client_payload.PAT || secrets.PAT }}
-      # 我自己同步到gitee使用，其他人可忽略
-      - name: commit
-        run: |
-          git config --global user.email ${{ secrets.EMAIL }}
-          git config --global user.name ${{ secrets.USER_NAME }}
-          git add .
-          git commit -m "update by wuzhi" -a || echo "Nothing to update"
-      - name: sync github -> gitee
-        uses: Yikun/hub-mirror-action@master
-        if: env.dst_key
+          source_repo: "https://github.com/chinnkarahoi/jd_scripts.git"
+          source_branch: "master"
+          destination_branch: "chinnkarahoi"
+          github_token: ${{ secrets.PAT }}
+          
+      - name: sync lan-tianxiang-scripts
+        uses: repo-sync/github-sync@v2
+        if: env.PAT
         with:
-          src: github/wuzhi03
-          dst: gitee/shuye72
-          static_list: "MyActions"
-          dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
-          dst_token: ${{ secrets.GITEE_TOKEN }}
+          source_repo: "https://github.com/lan-tianxiang/JS_TOOL.git"
+          source_branch: "A1"
+          destination_branch: "lan-tianxiang"
+          github_token: ${{ secrets.PAT }}
+          
+      - name: sync supermanito-main-scripts
+        uses: repo-sync/github-sync@v2
+        if: env.PAT
+        with:
+          source_repo: "https://github.com/zt6/github_SuperManito_JD-FreeFuck.git"
+          source_branch: "main"
+          destination_branch: "supermanito-main"
+          github_token: ${{ secrets.PAT }}
+          
+      - name: sync supermanito-source-scripts
+        uses: repo-sync/github-sync@v2
+        if: env.PAT
+        with:
+          source_repo: "https://github.com/zt6/github_SuperManito_JD-FreeFuck.git"
+          source_branch: "source"
+          destination_branch: "supermanito-source"
+          github_token: ${{ secrets.PAT }}
